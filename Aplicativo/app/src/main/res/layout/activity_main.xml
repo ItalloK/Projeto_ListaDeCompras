@@ -1,63 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinatorLayout"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
 
-    <!-- Container para Fragments -->
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <include
+        android:id="@+id/app_bar_main"
+        layout="@layout/app_bar_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Botão Flutuante Principal -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_main"
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:src="@android:drawable/ic_input_add"
-        android:contentDescription="Menu"
-        app:layout_anchorGravity="bottom|end"
-        android:layout_gravity="bottom|end" />
-
-    <!-- Menu flutuante personalizado -->
-    <LinearLayout
-        android:id="@+id/fab_menu"
-        android:visibility="gone"
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="80dp"
-        android:layout_marginBottom="90dp"
-        android:background="@android:color/white"
-        android:elevation="4dp"
-        android:padding="12dp">
-
-        <Button
-            android:id="@+id/btnMinhasListas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Minhas Listas" />
-        <Button
-            android:id="@+id/btnMeuPerfil"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Meu Perfil" />
-        <Button
-            android:id="@+id/btnCriarLista"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Criar Lista" />
-        <Button
-            android:id="@+id/btnListasImportadas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Listas Importadas" />
-    </LinearLayout>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
+</androidx.drawerlayout.widget.DrawerLayout>
