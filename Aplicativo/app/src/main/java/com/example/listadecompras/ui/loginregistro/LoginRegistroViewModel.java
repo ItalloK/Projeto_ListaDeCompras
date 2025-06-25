@@ -1,16 +1,16 @@
-package com.example.listadecompras.ui.gallery;
+package com.example.listadecompras.ui.loginregistro;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class GalleryViewModel extends ViewModel {
+public class LoginRegistroViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public GalleryViewModel() {
+    public LoginRegistroViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is gallery fragment");
+        mText.setValue("Pagina - Login / Registro");
     }
 
     public LiveData<String> getText() {

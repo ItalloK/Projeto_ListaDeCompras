@@ -1,4 +1,4 @@
-package com.example.listadecompras.ui.home;
+package com.example.listadecompras.ui.loginregistro;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,18 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.listadecompras.databinding.FragmentHomeBinding;
+import com.example.listadecompras.databinding.FragmentLoginregistroBinding;
 
-public class HomeFragment extends Fragment {
+public class LoginRegistroFragment extends Fragment {
 
-    private FragmentHomeBinding binding;
+    private FragmentLoginregistroBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        LoginRegistroViewModel homeViewModel =
+                new ViewModelProvider(this).get(LoginRegistroViewModel.class);
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding = FragmentLoginregistroBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textHome;
