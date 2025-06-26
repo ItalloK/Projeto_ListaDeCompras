@@ -1,9 +1,14 @@
+using ListasAPI.Src.Repositories;
+using ListasAPI.Src.Services;
 using ListasAPI.Src.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Chave secreta (coloque em config segura em produção!)
 var key = Global.chaveJWT; // você pode mover isso para appsettings.json

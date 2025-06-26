@@ -33,20 +33,21 @@ namespace ListasAPI.Src.Data
                 SQLiteConnection.CreateFile(UsuariosDbPath);
                 using var connection = new SQLiteConnection(UsuariosConnectionString);
                 connection.Open();
-                var createUsuarios = new SQLiteCommand("CREATE TABLE Users (Id INTEGER PRIMARY KEY AUTOINCREMENT, Nick TEXT UNIQUE, Email TEXT UNIQUE, Password TEXT NOT NULL, Stars INTEGER DEFAULT 0, Coins INTEGER DEFAULT 0)", connection);
+                var createUsuarios = new SQLiteCommand("CREATE TABLE Users (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Email TEXT UNIQUE, Password TEXT NOT NULL, Role TEXT NOT NULL DEFAULT 'Comum')", connection);
                 createUsuarios.ExecuteNonQuery();
+                Console.WriteLine("[DB INIT] Users table created sucessfull.");
 
                 var createRefreshTokens = new SQLiteCommand(@"
                                                             CREATE TABLE IF NOT EXISTS RefreshTokens (
                                                                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                                                UserNick TEXT NOT NULL,
+                                                                UserEmail TEXT NOT NULL,
                                                                 Token TEXT NOT NULL,
                                                                 ExpiresAt TEXT NOT NULL,
                                                                 IsRevoked INTEGER DEFAULT 0,
-                                                                FOREIGN KEY(UserNick) REFERENCES Users(Nick)
+                                                                FOREIGN KEY(UserEmail) REFERENCES Users(Email)
                                                         )", connection);
                 createRefreshTokens.ExecuteNonQuery();
-                Console.WriteLine("[DB INIT] Users table created sucessfull.");
+                Console.WriteLine("[DB INIT] RefreshTokens table created sucessfull.");
             }
         }
     }
