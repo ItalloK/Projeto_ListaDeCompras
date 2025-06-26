@@ -1,3 +1,4 @@
+using ListasAPI.Src.Data;
 using ListasAPI.Src.Repositories;
 using ListasAPI.Src.Services;
 using ListasAPI.Src.Utils;
@@ -12,6 +13,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Chave secreta (coloque em config segura em produção!)
 var key = Global.chaveJWT; // você pode mover isso para appsettings.json
+
+DbInitializer.Initialize();
 
 // Adiciona autenticação JWT
 builder.Services.AddAuthentication(options =>

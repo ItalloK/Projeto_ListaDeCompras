@@ -1,83 +1,128 @@
 package com.example.listadecompras;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.Toast;
 
+import com.example.listadecompras.api.ApiService;
+import com.example.listadecompras.api.RetrofitClient;
+import com.example.listadecompras.models.AuthResponse;
+import com.example.listadecompras.models.RefreshRequest;
+import com.example.listadecompras.util.TokenManager;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.listadecompras.databinding.ActivityMainBinding;
 
+import android.util.Log;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class Main extends AppCompatActivity {
 
-    // Configuração da AppBar para o Navigation Drawer
     private AppBarConfiguration mAppBarConfiguration;
-
-    // Objeto de binding para acessar os elementos do layout via View Binding
     private ActivityMainBinding binding;
+    private TokenManager tokenManager;
 
-    // Método chamado quando a Activity é criada
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inicializa o View Binding para o layout da activity
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        tokenManager = new TokenManager(this);
 
-        // Define o conteúdo da activity como a raiz do layout inflado
-        setContentView(binding.getRoot());
+        Log.d("MainActivity", "Access Token recuperado: " + tokenManager.getAccessToken());
+        Log.d("MainActivity", "Refresh Token recuperado: " + tokenManager.getRefreshToken());
 
-        // Configura a Toolbar como a barra de ação (action bar) da activity
-        setSupportActionBar(binding.appBarMain.toolbar);
+        iniciarUI();
 
-        // Referência ao DrawerLayout do layout (menu lateral)
-        DrawerLayout drawer = binding.drawerLayout;
-
-        // Referência ao NavigationView (menu lateral com itens de navegação)
-        NavigationView navigationView = binding.navView;
-
-        // Define quais destinos são considerados "top-level", ou seja,
-        // destinos principais que não mostram botão "voltar"
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.loginFragment,        // Tela de login/registro
-                R.id.nav_minhaslistas,         // Tela com listas do usuário
-                R.id.nav_listassalvas          // Tela com listas salvas
-        )
-                .setOpenableLayout(drawer) // Conecta o DrawerLayout ao Navigation Component
-                .build();
-
-        // Controlador de navegação que gerencia as trocas de fragmentos na tela
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-
-        // Configura a ActionBar para funcionar com o controlador de navegação
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-
-        // Faz o NavigationView (menu lateral) funcionar com o controlador de navegação
-        NavigationUI.setupWithNavController(navigationView, navController);
+        if (tokenManager.getAccessToken() != null && tokenManager.getRefreshToken() != null) {
+            tentarRenovarToken();
+        } else {
+            navegarParaLogin();
+        }
     }
 
-    // Método que cria o menu de opções da ActionBar
+
+    private void tentarRenovarToken() {
+        ApiService api = RetrofitClient.getInstance("").create(ApiService.class);
+        RefreshRequest req = new RefreshRequest(tokenManager.getRefreshToken());
+
+        api.refresh(req).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().status) {
+                    tokenManager.saveTokens(response.body().token, response.body().refreshToken);
+                    // Continua normalmente, pode navegar para tela principal
+                    navegarParaMinhasListas();
+                } else {
+                    fazerLogout();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AuthResponse> call, Throwable t) {
+                fazerLogout();
+            }
+        });
+    }
+
+    private void iniciarUI() {
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        setSupportActionBar(binding.appBarMain.toolbar);
+
+        DrawerLayout drawer = binding.drawerLayout;
+        NavigationView navigationView = binding.navView;
+
+        // Não inclua o loginFragment aqui para o botão hambúrguer aparecer sempre
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_minhaslistas,
+                R.id.nav_listassalvas
+        ).setOpenableLayout(drawer).build();
+
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
+
+        // Garantir drawer destravado sempre (opcional, caso tenha algo travando)
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    }
+
+    private void navegarParaLogin() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        navController.navigate(R.id.loginFragment);
+    }
+
+    private void navegarParaMinhasListas() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        navController.navigate(R.id.nav_minhaslistas);
+    }
+
+    private void fazerLogout() {
+        tokenManager.clear();
+        Toast.makeText(this, "Sessão expirada. Faça login novamente.", Toast.LENGTH_LONG).show();
+        navegarParaLogin();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Infla o menu (adiciona itens à ActionBar se ela estiver presente)
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
-    // Método chamado quando o usuário pressiona o botão "voltar" da ActionBar
     @Override
     public boolean onSupportNavigateUp() {
-        // Obtém o controlador de navegação atual
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-
-        // Tenta navegar para cima (voltar para o destino anterior)
-        // Se não for possível, executa o comportamento padrão
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }

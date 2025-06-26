@@ -17,7 +17,6 @@ namespace ListasAPI.Src.Controllers
         public AuthController(IAuthService authService)
         {
             _authService = authService;
-            DbInitializer.Initialize(); // opcional: mover para Program.cs
         }
 
         [HttpPost("register")]
