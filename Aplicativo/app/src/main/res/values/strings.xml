@@ -12,4 +12,6 @@
     <string name="menu_login">Login / Registro</string>
     <string name="menu_minhasListas">Minhas Listas</string>
     <string name="menu_listasSalvas">Listas Salvas</string>
+
+    <string name="userLoginAndRegister">Bem Vindo(a)</string>
 </resources>

@@ -6,12 +6,6 @@
     app:startDestination="@+id/nav_minhaslistas">
 
     <fragment
-        android:id="@+id/nav_loginregistro"
-        android:name="com.example.listadecompras.ui.loginregistro.LoginRegistroFragment"
-        android:label="@string/menu_login"
-        tools:layout="@layout/fragment_loginregistro" />
-
-    <fragment
         android:id="@+id/nav_minhaslistas"
         android:name="com.example.listadecompras.ui.minhaslistas.MinhasListasFragment"
         android:label="@string/menu_minhasListas"
@@ -22,4 +16,23 @@
         android:name="com.example.listadecompras.ui.listassalvas.ListasSalvasFragment"
         android:label="@string/menu_listasSalvas"
         tools:layout="@layout/fragment_listassalvas" />
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.listadecompras.ui.login.LoginFragment"
+        android:label="Login">
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.listadecompras.ui.register.RegisterFragment"
+        android:label="Register">
+        <action
+            android:id="@+id/action_register_to_login"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
 </navigation>
