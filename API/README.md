@@ -3,7 +3,7 @@
 
 ## 1. **Endpoints / Rotas da API**
 
-### 1.1 **/api/registro** - Registro de novos usuários
+### 1.1 **/api/auth/registro** - Registro de novos usuários
 
 - **Método HTTP:** `POST`
 - **Descrição:** Este endpoint permite que novos usuários se registrem na plataforma.
@@ -26,7 +26,7 @@
 }
 ```
 
-### 1.2 **/api/login** - Login de usuários
+### 1.2 **/api/auth/login** - Login de usuários
 
 - **Método HTTP:** `POST`
 - **Descrição:** Este endpoint permite que os usuários façam login na plataforma.
