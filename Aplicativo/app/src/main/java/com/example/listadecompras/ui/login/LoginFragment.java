@@ -58,6 +58,8 @@ public class LoginFragment extends Fragment {
                 public void onFailure(Call<AuthResponse> call, Throwable t) {
                     Toast.makeText(getContext(), "Falha na conexão", Toast.LENGTH_SHORT).show();
                     t.printStackTrace();
+
+                    System.out.println("[ LOG ] "+t);
                 }
             });
         });

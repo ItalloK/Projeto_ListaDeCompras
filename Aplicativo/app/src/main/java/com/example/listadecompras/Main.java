@@ -39,8 +39,8 @@ public class Main extends AppCompatActivity {
 
         tokenManager = new TokenManager(this);
 
-        Log.d("MainActivity", "Access Token recuperado: " + tokenManager.getAccessToken());
-        Log.d("MainActivity", "Refresh Token recuperado: " + tokenManager.getRefreshToken());
+        Log.d("MainActivity", "[ LOG ] Access Token recuperado: " + tokenManager.getAccessToken());
+        Log.d("MainActivity", "[ LOG ] Refresh Token recuperado: " + tokenManager.getRefreshToken());
 
         iniciarUI();
 
@@ -50,7 +50,6 @@ public class Main extends AppCompatActivity {
             navegarParaLogin();
         }
     }
-
 
     private void tentarRenovarToken() {
         //aqui

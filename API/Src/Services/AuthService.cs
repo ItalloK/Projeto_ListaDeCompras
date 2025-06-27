@@ -69,12 +69,16 @@ namespace ListasAPI.Src.Services
             var data = await _repo.GetRefreshToken(request.refreshToken);
 
             if (data == null)
+            {
+                Console.WriteLine($"[LOG] Token inválido ou expirado. (LN 74)");
                 return new { status = false, message = "Token inválido ou expirado." };
+            }
 
             var (nick, expiresAt, isRevoked) = data.Value;
 
             if (isRevoked || expiresAt < DateTime.UtcNow)
             {
+                Console.WriteLine($"[LOG] Token inválido ou expirado. (LN 78)");
                 return new { status = false, message = "Token inválido ou expirado." };
             }
 
