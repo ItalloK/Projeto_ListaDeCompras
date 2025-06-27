@@ -53,7 +53,9 @@ public class Main extends AppCompatActivity {
 
 
     private void tentarRenovarToken() {
-        ApiService api = RetrofitClient.getInstance("").create(ApiService.class);
+        //aqui
+        //ApiService api = RetrofitClient.getInstance("").create(ApiService.class);
+        ApiService api = RetrofitClient.getInstance(tokenManager.getAccessToken()).create(ApiService.class);
         RefreshRequest req = new RefreshRequest(tokenManager.getRefreshToken());
 
         api.refresh(req).enqueue(new Callback<>() {

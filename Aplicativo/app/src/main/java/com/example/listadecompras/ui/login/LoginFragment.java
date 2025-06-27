@@ -18,6 +18,7 @@ public class LoginFragment extends Fragment {
 
     private EditText emailEdit, senhaEdit;
     private Button loginBtn;
+    private TokenManager tokenManager; // Adiciona esta linha
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -27,6 +28,9 @@ public class LoginFragment extends Fragment {
         senhaEdit = v.findViewById(R.id.editTextSenha);
         loginBtn = v.findViewById(R.id.buttonLogin);
 
+        // Inicializa o TokenManager
+        tokenManager = new TokenManager(requireContext());
+
         v.findViewById(R.id.textGoToRegister).setOnClickListener(view ->
                 Navigation.findNavController(view).navigate(R.id.action_login_to_register));
 
@@ -34,14 +38,15 @@ public class LoginFragment extends Fragment {
             String email = emailEdit.getText().toString();
             String senha = senhaEdit.getText().toString();
 
-            ApiService api = RetrofitClient.getInstance("").create(ApiService.class);
+            ApiService api = RetrofitClient.getInstance(tokenManager.getAccessToken())
+                    .create(ApiService.class);
+
             AuthRequest req = new AuthRequest(email, senha, Global.APP_VERSION);
             api.login(req).enqueue(new Callback<>() {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().status) {
-                        TokenManager tm = new TokenManager(requireContext());
-                        tm.saveTokens(response.body().token, response.body().refreshToken);
+                        tokenManager.saveTokens(response.body().token, response.body().refreshToken);
 
                         Navigation.findNavController(view).navigate(R.id.nav_minhaslistas);
                     } else {
