@@ -9,6 +9,7 @@ public class TokenManager {
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_EMAIL = "user_email";
+    private static final String KEY_LOGGED_IN = "logged_in";
 
     private final SharedPreferences prefs;
 
@@ -46,7 +47,16 @@ public class TokenManager {
         return prefs.getString(KEY_USER_EMAIL, "");
     }
 
+    public void setLoggedIn(boolean loggedIn) {
+        prefs.edit().putBoolean(KEY_LOGGED_IN, loggedIn).apply();
+    }
+
+    public boolean isLoggedIn() {
+        return prefs.getBoolean(KEY_LOGGED_IN, false);
+    }
+
     public void clearTokens() {
         prefs.edit().clear().apply();
+        setLoggedIn(false);
     }
 }

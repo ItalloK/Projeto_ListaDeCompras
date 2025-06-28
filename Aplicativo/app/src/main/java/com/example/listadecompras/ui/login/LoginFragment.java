@@ -54,20 +54,15 @@ public class LoginFragment extends Fragment {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().status) {
-                        // Salva os tokens e info do usuário
+                        // Salva os tokens, info do usuário e estado logado
                         tokenManager.saveTokens(response.body().token, response.body().refresh_token);
                         tokenManager.saveUserInfo(response.body().name, response.body().email);
+                        tokenManager.setLoggedIn(true);
 
-                        // Atualiza diretamente o header da NavigationView
-                        NavigationView navView = getActivity().findViewById(R.id.nav_view);
-                        View headerView = navView.getHeaderView(0);
-                        TextView textNome = headerView.findViewById(R.id.textViewNome);
-                        TextView textEmail = headerView.findViewById(R.id.textViewEmail);
+                        // Atualiza menu e header na NavigationView do MainActivity
+                        atualizarMenuEHeader();
 
-                        textNome.setText(response.body().name);
-                        textEmail.setText(response.body().email);
-
-                        // Navega para tela principal
+                        // Navega para a tela principal
                         Navigation.findNavController(view).navigate(R.id.nav_minhaslistas);
                     } else {
                         Toast.makeText(getContext(), "Login incorreto ou inválido", Toast.LENGTH_SHORT).show();
@@ -83,5 +78,28 @@ public class LoginFragment extends Fragment {
         });
 
         return v;
+    }
+
+    private void atualizarMenuEHeader() {
+        // Pega NavigationView da Activity principal
+        NavigationView navView = getActivity().findViewById(R.id.nav_view);
+        if (navView == null) return;
+
+        Menu menu = navView.getMenu();
+
+        MenuItem loginItem = menu.findItem(R.id.loginFragment);
+        MenuItem logoutItem = menu.findItem(R.id.menu_logout);
+
+        // Atualiza visibilidade do menu
+        loginItem.setVisible(false);
+        logoutItem.setVisible(true);
+
+        // Atualiza o header com nome e email do usuário
+        View headerView = navView.getHeaderView(0);
+        TextView textNome = headerView.findViewById(R.id.textViewNome);
+        TextView textEmail = headerView.findViewById(R.id.textViewEmail);
+
+        textNome.setText(tokenManager.getUserName());
+        textEmail.setText(tokenManager.getUserEmail());
     }
 }
