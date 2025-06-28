@@ -42,7 +42,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 // Middleware
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // ATENÇÃO: a ordem importa — UseAuthentication antes de UseAuthorization!
 app.UseAuthentication();

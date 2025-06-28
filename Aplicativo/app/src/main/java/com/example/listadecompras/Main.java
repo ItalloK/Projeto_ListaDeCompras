@@ -2,8 +2,6 @@ package com.example.listadecompras;
 
 import android.os.Bundle;
 import android.view.Menu;
-
-import com.google.android.material.navigation.NavigationView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -12,6 +10,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.listadecompras.databinding.ActivityMainBinding;
+import com.example.listadecompras.util.TokenManager;
+import com.google.android.material.navigation.NavigationView;
 
 public class Main extends AppCompatActivity {
 
@@ -24,8 +24,7 @@ public class Main extends AppCompatActivity {
 
         iniciarUI();
 
-        // Sem autenticação: vai direto para a tela "Minhas Listas"
-        navegarParaMinhasListas();
+        verificarAutenticacao();
     }
 
     private void iniciarUI() {
@@ -49,9 +48,19 @@ public class Main extends AppCompatActivity {
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
-    private void navegarParaMinhasListas() {
+    private void verificarAutenticacao() {
+        TokenManager tokenManager = new TokenManager(this);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        navController.navigate(R.id.nav_minhaslistas);
+
+        String accessToken = tokenManager.getAccessToken();
+
+        if (accessToken != null && !accessToken.isEmpty()) {
+            // Usuário já está autenticado, vai para "Minhas Listas"
+            navController.navigate(R.id.nav_minhaslistas);
+        } else {
+            // Sem token -> tela de login
+            navController.navigate(R.id.loginFragment);
+        }
     }
 
     @Override
