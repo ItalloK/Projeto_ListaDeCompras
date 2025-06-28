@@ -2,6 +2,9 @@ package com.example.listadecompras;
 
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -46,6 +49,9 @@ public class Main extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
+        // 🔁 Atualiza os dados do header (nome e email)
+        atualizarHeaderUsuario();
     }
 
     private void verificarAutenticacao() {
@@ -61,6 +67,18 @@ public class Main extends AppCompatActivity {
             // Sem token -> tela de login
             navController.navigate(R.id.loginFragment);
         }
+    }
+
+    private void atualizarHeaderUsuario() {
+        TokenManager tokenManager = new TokenManager(this);
+
+        View headerView = binding.navView.getHeaderView(0);
+
+        TextView nomeTextView = headerView.findViewById(R.id.textViewNome);
+        TextView emailTextView = headerView.findViewById(R.id.textViewEmail);
+
+        nomeTextView.setText(tokenManager.getUserName());
+        emailTextView.setText(tokenManager.getUserEmail());
     }
 
     @Override

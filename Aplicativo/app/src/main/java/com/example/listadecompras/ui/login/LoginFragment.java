@@ -13,6 +13,7 @@ import com.example.listadecompras.models.AuthRequest;
 import com.example.listadecompras.models.AuthResponse;
 import com.example.listadecompras.util.Global;
 import com.example.listadecompras.util.TokenManager;
+import com.google.android.material.navigation.NavigationView;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,7 +54,20 @@ public class LoginFragment extends Fragment {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().status) {
+                        // Salva os tokens e info do usuário
                         tokenManager.saveTokens(response.body().token, response.body().refresh_token);
+                        tokenManager.saveUserInfo(response.body().name, response.body().email);
+
+                        // Atualiza diretamente o header da NavigationView
+                        NavigationView navView = getActivity().findViewById(R.id.nav_view);
+                        View headerView = navView.getHeaderView(0);
+                        TextView textNome = headerView.findViewById(R.id.textViewNome);
+                        TextView textEmail = headerView.findViewById(R.id.textViewEmail);
+
+                        textNome.setText(response.body().name);
+                        textEmail.setText(response.body().email);
+
+                        // Navega para tela principal
                         Navigation.findNavController(view).navigate(R.id.nav_minhaslistas);
                     } else {
                         Toast.makeText(getContext(), "Login incorreto ou inválido", Toast.LENGTH_SHORT).show();

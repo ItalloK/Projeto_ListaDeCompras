@@ -7,6 +7,8 @@ public class TokenManager {
     private static final String PREF_NAME = "auth_prefs";
     private static final String KEY_ACCESS_TOKEN = "access_token";
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
+    private static final String KEY_USER_NAME = "user_name";
+    private static final String KEY_USER_EMAIL = "user_email";
 
     private final SharedPreferences prefs;
 
@@ -21,6 +23,13 @@ public class TokenManager {
                 .apply();
     }
 
+    public void saveUserInfo(String name, String email) {
+        prefs.edit()
+                .putString(KEY_USER_NAME, name)
+                .putString(KEY_USER_EMAIL, email)
+                .apply();
+    }
+
     public String getAccessToken() {
         return prefs.getString(KEY_ACCESS_TOKEN, null);
     }
@@ -29,8 +38,15 @@ public class TokenManager {
         return prefs.getString(KEY_REFRESH_TOKEN, null);
     }
 
+    public String getUserName() {
+        return prefs.getString(KEY_USER_NAME, "");
+    }
+
+    public String getUserEmail() {
+        return prefs.getString(KEY_USER_EMAIL, "");
+    }
+
     public void clearTokens() {
         prefs.edit().clear().apply();
     }
 }
-
