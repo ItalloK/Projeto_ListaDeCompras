@@ -88,12 +88,17 @@ namespace ListasAPI.Src.Services
             string newRefreshToken = TokenService.GenerateRefreshToken();
             await _repo.SaveRefreshToken(nick, newRefreshToken, DateTime.UtcNow.AddDays(7));
 
+            var user = await _repo.GetUserByEmail(nick);
+
             return new
             {
                 status = true,
                 message = "Token renovado com sucesso.",
                 token = newAccessToken,
-                refresh_token = newRefreshToken
+                refresh_token = newRefreshToken,
+                name = user.name,
+                role = user.role,
+                email = nick
             };
         }
     }
