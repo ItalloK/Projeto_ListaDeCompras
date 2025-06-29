@@ -13,9 +13,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IListRepository, ListRepository>();
 builder.Services.AddScoped<IListService, ListService>();
 
-
-// Chave secreta (coloque em config segura em produção!)
-var key = Global.chaveJWT; // você pode mover isso para appsettings.json
+var key = Global.chaveJWT; // Chave secreta (coloque em config segura em produção!)
 
 DbInitializer.Initialize();
 
@@ -47,7 +45,6 @@ var app = builder.Build();
 // Middleware
 //app.UseHttpsRedirection();
 
-// ATENÇÃO: a ordem importa — UseAuthentication antes de UseAuthorization!
 app.UseAuthentication();
 app.UseAuthorization();
 
