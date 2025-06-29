@@ -1,5 +1,5 @@
 
-# Informações sobre a API de Registro e Login
+# Informações sobre as rotas da API
 
 ## 1. **Endpoints / Rotas da API**
 
