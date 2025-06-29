@@ -10,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IListRepository, ListRepository>();
+builder.Services.AddScoped<IListService, ListService>();
+
 
 // Chave secreta (coloque em config segura em produção!)
 var key = Global.chaveJWT; // você pode mover isso para appsettings.json
