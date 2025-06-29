@@ -189,21 +189,35 @@ namespace ListasAPI.Src.Repositories
             using var connection = new SqliteConnection(_connectionString);
             await connection.OpenAsync();
 
+            // Verifica se a lista existe
+            var check = connection.CreateCommand();
+            check.CommandText = "SELECT COUNT(*) FROM Lists WHERE Id = @Id";
+            check.Parameters.AddWithValue("@Id", id);
+            var count = (long)await check.ExecuteScalarAsync();
+
+            if (count == 0)
+                throw new KeyNotFoundException("Lista não existe.");
+
+            // Atualiza o título da lista
             var updateTitle = connection.CreateCommand();
             updateTitle.CommandText = "UPDATE Lists SET Title = @Title WHERE Id = @Id";
             updateTitle.Parameters.AddWithValue("@Title", request.Title);
             updateTitle.Parameters.AddWithValue("@Id", id);
             await updateTitle.ExecuteNonQueryAsync();
 
-            var deleteOldItems = connection.CreateCommand();
-            deleteOldItems.CommandText = "DELETE FROM Items WHERE ListId = @Id";
-            deleteOldItems.Parameters.AddWithValue("@Id", id);
-            await deleteOldItems.ExecuteNonQueryAsync();
+            // Remove os itens antigos
+            var deleteItems = connection.CreateCommand();
+            deleteItems.CommandText = "DELETE FROM Items WHERE ListId = @Id";
+            deleteItems.Parameters.AddWithValue("@Id", id);
+            await deleteItems.ExecuteNonQueryAsync();
 
+            // Insere os novos itens
             foreach (var item in request.Items)
             {
                 var insertItem = connection.CreateCommand();
-                insertItem.CommandText = "INSERT INTO Items (ListId, Name, Quantity, Value) VALUES (@ListId, @Name, @Quantity, @Value)";
+                insertItem.CommandText = @"
+            INSERT INTO Items (ListId, Name, Quantity, Value)
+            VALUES (@ListId, @Name, @Quantity, @Value)";
                 insertItem.Parameters.AddWithValue("@ListId", id);
                 insertItem.Parameters.AddWithValue("@Name", item.Name);
                 insertItem.Parameters.AddWithValue("@Quantity", item.Quantity);

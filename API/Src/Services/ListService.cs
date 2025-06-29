@@ -72,8 +72,19 @@ namespace ListasAPI.Src.Services
 
         public async Task<object> UpdateList(int id, UpdateListRequest request)
         {
-            await _repo.UpdateList(id, request);
-            return new { status = true, message = "Lista atualizada com sucesso." };
+            try
+            {
+                await _repo.UpdateList(id, request);
+                return new { status = true, message = "Lista atualizada com sucesso." };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new { status = false, message = ex.Message };
+            }
+            catch (Exception)
+            {
+                return new { status = false, message = "Erro inesperado ao atualizar a lista." };
+            }
         }
     }
 }
