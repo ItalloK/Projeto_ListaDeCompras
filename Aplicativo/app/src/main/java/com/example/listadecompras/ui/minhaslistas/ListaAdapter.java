@@ -1,5 +1,6 @@
 package com.example.listadecompras.ui.minhaslistas;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.listadecompras.R;
@@ -39,7 +41,18 @@ public class ListaAdapter extends RecyclerView.Adapter<ListaAdapter.ListaViewHol
         holder.txtDataCriacao.setText("Criado em: " + model.createdAt.split("T")[0]);
         holder.txtDataExpiracao.setText("Expira em: " + model.expiresAt.split("T")[0]);
 
-        // Aqui você pode colocar ações nos botões
+        View.OnClickListener clickListener = v -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("modo", (v == holder.btnVisualizar) ? "visualizar" : "editar");
+            bundle.putSerializable("lista", model);
+
+            Navigation.findNavController(v).navigate(R.id.listaDetalhesFragment, bundle);
+        };
+
+        holder.btnVisualizar.setOnClickListener(clickListener);
+        holder.btnEditar.setOnClickListener(clickListener);
+
+        // btnDeletar -> Fazer logica do delete
     }
 
     @Override

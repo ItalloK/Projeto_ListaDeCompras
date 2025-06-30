@@ -1,6 +1,8 @@
 package com.example.listadecompras.models;
 
-public class ItemModel {
+import java.io.Serializable;
+
+public class ItemModel implements Serializable {
     public int id;
     public int listId;
     public String name;

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_minhaslistas">
+    app:startDestination="@id/nav_minhaslistas">
 
     <fragment
         android:id="@+id/nav_minhaslistas"
@@ -34,5 +34,10 @@
             android:id="@+id/action_register_to_login"
             app:destination="@id/loginFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/listaDetalhesFragment"
+        android:name="com.example.listadecompras.ui.listadetalhes.ListaDetalhesFragment"
+        android:label="Detalhes da Lista" />
 
 </navigation>

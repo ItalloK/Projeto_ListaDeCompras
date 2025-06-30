@@ -1,8 +1,9 @@
 package com.example.listadecompras.models;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ListModel {
+public class ListModel implements Serializable {
     public int id;
     public String title;
     public String code;
