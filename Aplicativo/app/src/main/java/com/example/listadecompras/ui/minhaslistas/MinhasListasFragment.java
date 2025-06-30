@@ -1,41 +1,76 @@
 package com.example.listadecompras.ui.minhaslistas;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.TextView;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.listadecompras.api.*;
 import com.example.listadecompras.databinding.FragmentMinhaslistasBinding;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.listadecompras.models.*;
+import com.example.listadecompras.util.TokenManager;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MinhasListasFragment extends Fragment {
 
     private FragmentMinhaslistasBinding binding;
+    private TokenManager tokenManager;
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        MinhasListasViewModel galleryViewModel =
-                new ViewModelProvider(this).get(MinhasListasViewModel.class);
 
         binding = FragmentMinhaslistasBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textGallery;
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        tokenManager = new TokenManager(requireContext());
 
-        binding.btnNewLista.setOnClickListener(new View.OnClickListener() {
+        RecyclerView recyclerView = binding.recyclerViewListas;
+        TextView txtQtdListas = binding.txtQtdListas;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        String email = tokenManager.getUserEmail();
+        if (email == null || email.isEmpty()) {
+            txtQtdListas.setText("Usuário não identificado.");
+            return root;
+        }
+
+        ApiService api = RetrofitClient.getInstance(getContext()).create(ApiService.class);
+
+        api.getUserLists(email).enqueue(new Callback<ListResponse>() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show();
+            public void onResponse(Call<ListResponse> call, Response<ListResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().status) {
+                    List<ListModel> listas = response.body().data;
+                    txtQtdListas.setText("Você tem " + listas.size() + " listas criadas");
+                    recyclerView.setAdapter(new ListaAdapter(listas));
+                } else {
+                    txtQtdListas.setText("Erro ao carregar listas.");
+                    try {
+                        Log.e("LISTAS", "Erro: " + (response.errorBody() != null ? response.errorBody().string() : "desconhecido"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ListResponse> call, Throwable t) {
+                txtQtdListas.setText("Erro de conexão.");
+                Log.e("LISTAS", "Falha na requisição: " + t.getMessage());
             }
         });
+
         return root;
     }
 

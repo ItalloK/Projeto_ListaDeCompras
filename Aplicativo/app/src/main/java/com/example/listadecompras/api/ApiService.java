@@ -4,6 +4,8 @@ import com.example.listadecompras.models.*;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public interface ApiService {
     @POST("auth/register")
@@ -14,4 +16,9 @@ public interface ApiService {
 
     @POST("auth/refresh")
     Call<AuthResponse> refresh(@Body RefreshRequest request);
+
+    @GET("lists/user/{email}")
+    Call<ListResponse> getUserLists(@Path("email") String email);
+
+
 }
