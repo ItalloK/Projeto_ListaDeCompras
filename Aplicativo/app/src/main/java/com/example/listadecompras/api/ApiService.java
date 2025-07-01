@@ -6,6 +6,8 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.PUT;
+import retrofit2.http.DELETE;
 
 public interface ApiService {
     @POST("auth/register")
@@ -20,5 +22,10 @@ public interface ApiService {
     @GET("lists/user/{email}")
     Call<ListResponse> getUserLists(@Path("email") String email);
 
+    @PUT("lists/update/{id}")
+    Call<ApiResponse> updateList(@Path("id") int listId, @Body ListModel listModel);
+
+    @DELETE("lists/delete/{id}")
+    Call<ApiResponse> deleteList(@Path("id") int id);
 
 }

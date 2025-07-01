@@ -1,18 +1,24 @@
 package com.example.listadecompras.ui.minhaslistas;
 
 import android.os.Bundle;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.listadecompras.api.*;
+import com.example.listadecompras.R;
+import com.example.listadecompras.api.ApiService;
+import com.example.listadecompras.api.RetrofitClient;
 import com.example.listadecompras.databinding.FragmentMinhaslistasBinding;
-import com.example.listadecompras.models.*;
+import com.example.listadecompras.models.ApiResponse;
+import com.example.listadecompras.models.ListModel;
+import com.example.listadecompras.models.ListResponse;
 import com.example.listadecompras.util.TokenManager;
 
 import java.util.List;
@@ -25,6 +31,9 @@ public class MinhasListasFragment extends Fragment {
 
     private FragmentMinhaslistasBinding binding;
     private TokenManager tokenManager;
+    private List<ListModel> listas;
+    private ListaAdapter adapter;
+    private ApiService api;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -45,29 +54,52 @@ public class MinhasListasFragment extends Fragment {
             return root;
         }
 
-        ApiService api = RetrofitClient.getInstance(getContext()).create(ApiService.class);
+        api = RetrofitClient.getInstance(getContext()).create(ApiService.class);
 
         api.getUserLists(email).enqueue(new Callback<ListResponse>() {
             @Override
             public void onResponse(Call<ListResponse> call, Response<ListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().status) {
-                    List<ListModel> listas = response.body().data;
+                    listas = response.body().data;
                     txtQtdListas.setText("Você tem " + listas.size() + " listas criadas");
-                    recyclerView.setAdapter(new ListaAdapter(listas));
+
+                    adapter = new ListaAdapter(listas, (listModel, position) -> {
+                        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                                .setTitle("Confirmar exclusão")
+                                .setMessage("Tem certeza que deseja excluir a lista \"" + listModel.title + "\"?")
+                                .setPositiveButton("Excluir", (dialog, which) -> {
+                                    api.deleteList(listModel.id).enqueue(new Callback<ApiResponse>() {
+                                        @Override
+                                        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                                            if (response.isSuccessful() && response.body() != null && response.body().status) {
+                                                adapter.removeItem(position);
+                                                binding.txtQtdListas.setText("Você tem " + listas.size() + " listas criadas");
+                                                Toast.makeText(getContext(), "Lista deletada com sucesso", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(getContext(), "Erro ao deletar lista", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<ApiResponse> call, Throwable t) {
+                                            Toast.makeText(getContext(), "Falha na conexão", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                })
+                                .setNegativeButton("Cancelar", null)
+                                .show();
+                    });
+
+                    recyclerView.setAdapter(adapter);
+
                 } else {
                     txtQtdListas.setText("Erro ao carregar listas.");
-                    try {
-                        Log.e("LISTAS", "Erro: " + (response.errorBody() != null ? response.errorBody().string() : "desconhecido"));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                 }
             }
 
             @Override
             public void onFailure(Call<ListResponse> call, Throwable t) {
                 txtQtdListas.setText("Erro de conexão.");
-                Log.e("LISTAS", "Falha na requisição: " + t.getMessage());
             }
         });
 

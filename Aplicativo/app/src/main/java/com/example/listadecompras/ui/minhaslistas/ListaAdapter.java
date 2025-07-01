@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.listadecompras.ui.deletelist.OnDeleteClickListener;
 import com.example.listadecompras.R;
 import com.example.listadecompras.models.ListModel;
 
@@ -19,9 +20,11 @@ import java.util.List;
 public class ListaAdapter extends RecyclerView.Adapter<ListaAdapter.ListaViewHolder> {
 
     private List<ListModel> lista;
+    private OnDeleteClickListener deleteClickListener;
 
-    public ListaAdapter(List<ListModel> lista) {
+    public ListaAdapter(List<ListModel> lista, OnDeleteClickListener deleteClickListener) {
         this.lista = lista;
+        this.deleteClickListener = deleteClickListener;
     }
 
     @NonNull
@@ -52,12 +55,23 @@ public class ListaAdapter extends RecyclerView.Adapter<ListaAdapter.ListaViewHol
         holder.btnVisualizar.setOnClickListener(clickListener);
         holder.btnEditar.setOnClickListener(clickListener);
 
-        // btnDeletar -> Fazer logica do delete
+        // Listener de deletar
+        holder.btnDeletar.setOnClickListener(v -> {
+            if (deleteClickListener != null) {
+                deleteClickListener.onDeleteClick(model, position);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return lista.size();
+    }
+
+    public void removeItem(int position) {
+        lista.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, lista.size());
     }
 
     static class ListaViewHolder extends RecyclerView.ViewHolder {
